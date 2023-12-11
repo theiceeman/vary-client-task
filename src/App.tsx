@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { Request } from "./helpers/https";
+import jsonData from "./db";
 
 function App() {
   const [books, setBooks] = useState<any>([]);
@@ -14,6 +15,14 @@ function App() {
     );
     setBooks(result);
   };
+
+  function paginateData(data: Array<any>, pageSize: any, pageNumber: any) {
+    const startIndex = (pageNumber - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedData = data.slice(startIndex, endIndex);
+    // console.log({paginatedData})
+    return paginatedData;
+  }
 
   // Get the target element you want to observe
   const targetElement = document.querySelector("#footer-eleme");
@@ -38,10 +47,13 @@ function App() {
   targetElement && observer.observe(targetElement);
 
   const getBooks = async (limit: any) => {
-    let res = await Request.get(`http://localhost:3333/books/view/1/${limit}`);
-    setBooks(res.data.data.data.data);
-    setMainBooks(res.data.data.data.data);
-    // setBookLength(res.data.data.data.data.length())
+    // let res = await Request.get(`http://localhost:3333/books/view/1/${limit}`);
+    // setBooks(res.data.data.data.data);
+    // setMainBooks(res.data.data.data.data);
+
+    let res = await paginateData(jsonData, limit, 1);
+    setBooks(res);
+    setMainBooks(res);
   };
 
   useEffect(() => {
